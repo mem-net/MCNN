@@ -2,6 +2,10 @@
 
 Website: https://sites.google.com/view/mcnn-anon
 
+<p align="center">
+  <img src="assets/mcnn.gif" width="320" height="240" alt="Videos of MCNN agents performing dexterous manipulation tasks">
+</p>
+
 ## Setup
 Create env, install pytorch, install requirements.
 ```bash
