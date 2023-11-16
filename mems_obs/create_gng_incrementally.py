@@ -4,6 +4,7 @@ import numpy as np
 import collections
 import pickle
 from neural_gas_helpers import data2gas
+from franka_kitchen_helpers import create_gng_incremental_for_frankakitchen
 import os 
 from collections import defaultdict
 import time
@@ -21,6 +22,11 @@ args = parser.parse_args()
 # setup
 folder = f'mems_obs/memories'
 os.makedirs(folder, exist_ok=True)
+
+# for kitchen data only since it has a different dataset format
+if args.name == 'kitchen':
+    create_gng_incremental_for_frankakitchen(folder, args)
+    exit()
 
 # load top_paths
 with open(f'data/top_paths.pkl', 'rb') as f:
