@@ -2,7 +2,6 @@ import numpy as np
 import collections
 import pickle
 from neural_gas_helpers import data2gas
-from franka_kitchen_helpers import update_data_for_frankakitchen
 import os 
 from collections import defaultdict
 import time
@@ -39,11 +38,6 @@ print(f'\n\n\n\n')
 # setup
 folder = f'mems_obs/updated_datasets'
 os.makedirs(folder, exist_ok=True)
-
-# for kitchen data only since it has a different dataset format
-if args.name == 'kitchen':
-    update_data_for_frankakitchen(folder, args)
-    exit()
 
 # load paths and top_paths
 if 'carla' in args.name:

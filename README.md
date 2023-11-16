@@ -4,7 +4,6 @@ Website: https://sites.google.com/view/mcnn-anon
 
 <p align="center">
   <img src="assets/mcnn.gif" width="320" height="240" alt="Videos of MCNN agents performing dexterous manipulation tasks">
-  <img src="assets/kitchen5.gif" width="320" height="240" alt="Videos of MCNN agents in the Franka Kitchen environment">
 </p>
 
 ## Setup
@@ -69,10 +68,9 @@ python algos/td3bc_trainer.py --algo-name mem_bc --task pen-human-v1 --num_memor
 
 For MLP-BC:
 ```bash
-python algos/td3bc_trainer.py --algo-name bc --task pen-human-v1
+python algos/td3bc_trainer.py --algo-name bc --task pen-human-v1 --oversampling 1
 ```
-
-(If you'd like to run vanilla MLP-BC with oversampling of memories, please switch to the `expts` branch.)
+The oversampling value can be any integer greater than or equal to zero. A value of zero is no oversampling. A value of one implies memories are sampled again outside of the training dataset. And so on.
 
 For 1NN and VINN:
 ```bash
@@ -102,36 +100,26 @@ python main.py --algo bc --env_name pen-human-v1 --device 0 --ms online --lr_dec
 ```
 
 ### Train / Evaluate with Diffusion Policy [Chi et al., RSS 2023] in FrankaKitchen Environments
-Move to the folder, perform extra installs, and download the franka ktchen dataset:
+Move to the folder:
 ```bash
 cd diffusion_policy
-pip install -e .
-pip install -r more_requirements.txt
-bash download_kitchen_data.sh
 ```
 
-Then run diffusion policy BC first:
+For MCNN + Diffusion:
 ```bash
-python train.py --config-dir=. --config-name=kitchen_diffusion_policy_cnn.yaml training.seed=42 training.device=cuda:0 hydra.run.dir='data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}'
-```
-The above, at the very start, reads some downloaded multitask mujoco logs and saves all the observations/actions (in diffusion_policy/data/kitchen/kitchen_demos_multitask/) so that neural gas and memories can be created. 
 
-Create neural gas and memories:
-```bash
-python mems_obs/create_gng_incrementally.py --name kitchen --num_memories_frac 0.1
-python mems_obs/update_data.py --name kitchen --num_memories_frac 0.1
 ```
-Feel free to replace 0.1 with any value less than one.
 
-Finally, run MCNN + Diffusion:
+For Diffusion-BC:
 ```bash
-python train.py --config-dir=. --config-name=kitchen_mcnn_diffusion_cnn.yaml training.seed=42 training.device=cuda:0 hydra.run.dir='data/outputs/${now:%Y.%m.%d}/${now:%H.%M.%S}_${name}_${task_name}'
+
 ```
 
 ### Train / Evaluate with Behavior Transformer (BeT)
 Extra installs:
 ```
-cd miniBET && pip install -e . && cd ../
+cd miniBET
+pip install -e .
 ```
 
 For MCNN + BeT:
@@ -146,11 +134,11 @@ python algos/td3bc_trainer_with_bet.py --algo-name bet --task pen-human-v1
 
 ## Detailed instructions for creating datasets
 ### Collect data
-Download d4rl datasets, resnet models for CARLA embeddings, and franka kitchen dataset:
+Download d4rl datasets, franka kitchen dataset, and resnet models for CARLA embeddings:
 ```bash
 python data/download_d4rl_datasets.py
-python data/download_nocrash_models.py
 cd diffusion_policy && bash download_kitchen_data.sh && cd ../
+python data/download_nocrash_models.py
 ```
 
 Gnerate CARLA embeddings
@@ -176,4 +164,4 @@ Create random subset of all observations as memories and update (downloaded) dat
 ```bash
 python mems_obs/update_data_random_mems.py --name pen-human-v1 --num_memories_frac 0.1
 ```
-Similar to above, replace name with any of the other tasks and num_memories_frac with any value less than 1. 
+Similar to above, replace name with any of the other tasks and num_memories_frac with any value less than 1.
